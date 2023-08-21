@@ -27,10 +27,9 @@ plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 # generate ground truth
 np.random.seed(0)
 sample_size = 200 # number of ground truth observations
-x0 = np.zeros(sample_size)
-sig = 0.2
-# c = [1.0, 0, 1]
-c = [1.0, 1.0, 1.0]
+x0 = np.zeros(sample_size) # initial step
+sig = 0.2 # noise variance
+c = [1.0, 1.0, 1.0] # autoregression coefficient
 x1 = c[0] * x0 + np.random.normal(1, sig, size=sample_size)
 x2 = c[1] * x1 + np.random.normal(1, sig, size=sample_size)
 x3 = c[2] * x2 + np.random.normal(1, sig, size=sample_size)
@@ -92,6 +91,7 @@ plt.show()
 #%%
 
 def generate_preds(mu_eps=[0,0,0], std_eps=[0, 0, 0], seed=0, visualize=True):
+    """ generate predictions by purturbing the parameters of the ground truth model  """
     np.random.seed(seed)
     # eps1 = 0 
     # eps2 = 1.0
@@ -120,6 +120,7 @@ def generate_preds(mu_eps=[0,0,0], std_eps=[0, 0, 0], seed=0, visualize=True):
     return preds
 
 def generate_preds2(mu_eps=[0,0,0], std_eps=[0,0,0], sig=0.2, c=[1,1,1], seed=0, visualize=True):
+    """ generate predictions by purturbing the parameters of the ground truth model  """
     np.random.seed(seed)
     # eps1 = 0 
     # eps2 = 1.0
@@ -149,7 +150,9 @@ def generate_preds2(mu_eps=[0,0,0], std_eps=[0,0,0], sig=0.2, c=[1,1,1], seed=0,
 
 c_preds = [1,1,1]
 unbiased_preds = generate_preds2(mu_eps=[0, 0, 0], std_eps=[0, 0, 0], sig=sig, c=c)
-# bias_type = 'symm_mean'
+
+# set the type of biased prediction
+bias_type = 'symm_mean'
 # bias_type = 'asymm_mean'
 # bias_type = 'large_var'
 # bias_type = 'small_var'
