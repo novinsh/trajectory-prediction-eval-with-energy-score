@@ -3,7 +3,7 @@
 import numpy as np
 import os
 from pathlib import Path
-from numba import guvectorize, float64, int32, njit
+from numba import njit
 
 datasets = [
     ['biwi_eth.txt'], 
@@ -97,7 +97,7 @@ def fde_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
         average displacement error of the best trajectory (trajectory with
         lowest error) averaged across all samples in the dataset
     """
-    errors = calculate_displacement_error(y[:,:,-1], y_hat[:,:,-1])
+    # errors = calculate_displacement_error(y[:,:,-1], y_hat[:,:,-1])
     n_trajectories = y_hat.shape[1]
     N = int(n_trajectories * percentage)
     # print(N)
@@ -111,7 +111,7 @@ def ade_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
         average displacement error of the best trajectory (trajectory with
         lowest error) averaged across all samples in the dataset
     """
-    errors = calculate_displacement_error(y[:,:,:], y_hat[:,:,:]).mean(axis=2)
+    # errors = calculate_displacement_error(y[:,:,:], y_hat[:,:,:]).mean(axis=2)
     n_trajectories = y_hat.shape[1]
     N = int(n_trajectories * percentage)
     # print(N)
@@ -122,15 +122,15 @@ def ade_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
 #%%
 
 
-@njit('f8[:](f8[:,:,:,:], f8[:,:,:,:], f8)', cache = False, )
-def energy_score(y, x, K=1):
+@njit('f8[:](f8[:,:,:,:], f8[:,:,:,:], f8, f8, f8)', cache = False, )
+def energy_score_wrapped(y, x, K=1, d=2, b=1):
     """ This implementation only takes the temporal aspects into account but also
         does not separate the spatial dimensions (flatten out together).
     """
     # K=1
     K=int(K)
-    d=2.0
-    b=1.0
+    d=int(d)
+    b=int(b)
     n_samples = x.shape[0]
     n_scenarios = x.shape[1]
     n_horizon = x.shape[2]
@@ -148,28 +148,26 @@ def energy_score(y, x, K=1):
             # print((x[s,j]-y[s,0]).shape)
             # Equivalent to the Frobenius distance
             ed += (np.sum(np.abs(x[s,j]-y[s,0])**d)**(1/d))**b
-        ed/=(M*n_dims)
+        ed/=M
         #
         ei=0
-        c = 0
         for j in range(M):
             for k in range(K):
                 ei += (np.sum(np.abs((x[s,j]-x[s,(j+k+1)%M]))**d)**(1/d))**b
-                c += 1
-        ei /= (c*n_dims)
+        ei /= M*M
         es[s] = ed - 0.5 * ei
     return es
 
 # print(energy_score(pred_gts, pred_ours, K=pred_ours.shape[1]).mean().round(3))
 #%%
 
-@njit('f8[:,:](f8[:,:,:,:], f8[:,:,:,:], f8)', cache = False, )
-def energy_score_temporal(y, x, K=1):
+@njit('f8[:,:](f8[:,:,:,:], f8[:,:,:,:], f8, f8, f8)', cache = False, )
+def energy_score_temporal_wrapped(y, x, K=1, d=2, b=1):
     """ This implementation only takes the temporal aspects into account """
     # K=1
     K=int(K)
-    d=2.0
-    b=1.0
+    d=int(d)
+    b=int(b)
     n_samples = x.shape[0]
     n_scenarios = x.shape[1]
     n_horizon = x.shape[2]
@@ -205,13 +203,13 @@ def energy_score_temporal(y, x, K=1):
 # print(energy_score_temporal(pred_gts, pred_ours, K=pred_ours.shape[1]).mean().round(3))
 #%%
 
-@njit('f8[:,:](f8[:,:,:,:], f8[:,:,:,:], f8)', cache = False, )
-def energy_score_spatial(y, x, K=1):
+@njit('f8[:,:](f8[:,:,:,:], f8[:,:,:,:], f8, f8, f8)', cache = False, )
+def energy_score_spatial_wrapped(y, x, K=1, d=2, b=1):
     """ This implementation only takes the spatial aspects into account """
     # K=1
     K=int(K)
-    d=2.0
-    b=1.0
+    d=int(d)
+    b=int(b)
     n_samples = x.shape[0]
     n_scenarios = x.shape[1]
     n_horizon = x.shape[2]
@@ -246,13 +244,13 @@ def energy_score_spatial(y, x, K=1):
 # print(energy_score_spatial(pred_gts, pred_ours, K=pred_ours.shape[1]).mean().round(3))
 #%%
 
-@njit('f8[:](f8[:,:,:,:], f8[:,:,:,:], f8)', cache = False, )
-def energy_score_spatiotemporal(y, x, K=1):
+@njit('f8[:](f8[:,:,:,:], f8[:,:,:,:], f8, f8, f8)', cache = False, )
+def energy_score_spatiotemporal_wrapped(y, x, K=1, d=2, b=1):
     """ This implementation respects both spatial and temporal aspects"""
     # K=1
     K=int(K)
-    d=2.0
-    b=1.0
+    d=int(d)
+    b=int(b)
     n_samples = x.shape[0]
     n_scenarios = x.shape[1]
     n_horizon = x.shape[2]
@@ -295,6 +293,19 @@ def energy_score_spatiotemporal(y, x, K=1):
 
 # print(energy_score_spatiotemporal(pred_gts, pred_ours, K=pred_ours.shape[1]).shape)
 # print(energy_score_spatiotemporal(pred_gts, pred_ours, K=pred_ours.shape[1]).mean().round(3))
+
+def energy_score(y, x, K=1, d=2, b=1):
+    return energy_score_wrapped(y, x, K=K, d=d, b=b)
+
+def energy_score_temporal(y, x, K=1, d=2, b=1):
+    return energy_score_temporal_wrapped(y, x, K=K, d=d, b=b)
+
+def energy_score_spatial(y, x, K=1, d=2, b=1):
+    return energy_score_spatial_wrapped(y, x, K=K, d=d, b=b)
+
+def energy_score_spatiotemporal(y, x, K=1, d=2, b=1):
+    return energy_score_spatiotemporal_wrapped(y, x, K=K, d=d, b=b)
+
 #%%
 if __name__ == "__main__":
 #%%
