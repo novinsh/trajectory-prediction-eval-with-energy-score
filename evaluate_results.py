@@ -19,6 +19,8 @@ def calculate_displacement_error(y, y_hat):
     # y_hat dim: (num_samples x num_scenarios x num_leadtime x 2)
     return np.sqrt(np.sum((y-y_hat)**2, axis=-1)) 
 
+# TODO: naming of this function is not appropriate. has to be changed. Unless,
+# when we pass a trajectory to it we put the most likely trajectory on the last index
 def fde_ml(y, y_hat):
     """ 
         average final displacement error of the most likely trajectory (indexed 0) 
@@ -26,6 +28,7 @@ def fde_ml(y, y_hat):
     """
     return calculate_displacement_error(y[:,0,-1], y_hat[:,0,-1]).mean()
 
+# TODO: correct naming
 def ade_ml(y, y_hat):
     """ 
         average displacement error of the most likely trajectory (indexed 0) 
@@ -61,6 +64,7 @@ def ade_best20(y, y_hat):
 
 
 #%%
+# TODO: correct naming. topN we meant average of l-lowest of N 
 def fde_topN(y, y_hat, N=1, axis=(0,1)):
     """
         average displacement error of the best trajectory (trajectory with
@@ -76,6 +80,7 @@ def fde_topN(y, y_hat, N=1, axis=(0,1)):
 # print(fde_topN(pred_gts, pred_ours, N=1, axis=0).round(2))
 # print(fde_best20(pred_gts, pred_ours).round(2))
 
+# TODO: correct naming. topN we meant average of l-lowest of N 
 def ade_topN(y, y_hat, N=1, axis=(0,1)):
     """
         average displacement error of the best trajectory (trajectory with
@@ -92,6 +97,7 @@ def ade_topN(y, y_hat, N=1, axis=(0,1)):
 # print(ade_best20(pred_gts, pred_ours).round(2))
 #%%
 
+# TODO: correct naming to avoid confusion
 def fde_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
     """
         average displacement error of the best trajectory (trajectory with
@@ -106,6 +112,7 @@ def fde_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
 # print(fde_topN(pred_gts, pred_ours, N=2, axis=0).round(2))
 # print(fde_topNPercent(pred_gts, pred_ours, percentage=0.2, axis=0).round(2))
 
+# TODO: correct naming to avoid confusion
 def ade_topNPercent(y, y_hat, percentage=0.1, axis=(0,1)):
     """
         average displacement error of the best trajectory (trajectory with
