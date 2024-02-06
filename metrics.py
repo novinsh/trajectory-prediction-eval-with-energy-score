@@ -4,67 +4,15 @@ import numpy as np
 import os
 from pathlib import Path
 from numba import njit
-
-datasets = [
-    ['biwi_eth.txt'], 
-    ['biwi_hotel.txt'], 
-    # ['students001.txt', 'students003.txt'],
-    # ['crowds_zara01.txt'], 
-    # ['crowds_zara02.txt'],
-]
-
 #%%
 
 def calculate_displacement_error(y, y_hat):
     # y_hat dim: (num_samples x num_scenarios x num_leadtime x 2)
     return np.sqrt(np.sum((y-y_hat)**2, axis=-1)) 
 
-# TODO: naming of this function is not appropriate. has to be changed. Unless,
-# when we pass a trajectory to it we put the most likely trajectory on the last index
-def fde_ml(y, y_hat):
-    """ 
-        average final displacement error of the most likely trajectory (indexed 0) 
-        across all samples in the dataset 
-    """
-    return calculate_displacement_error(y[:,0,-1], y_hat[:,0,-1]).mean()
-
-# TODO: correct naming
-def ade_ml(y, y_hat):
-    """ 
-        average displacement error of the most likely trajectory (indexed 0) 
-        across all samples in the dataset 
-    """
-    return calculate_displacement_error(y[:,0], y_hat[:,0]).mean()
-
-def fde_best20(y, y_hat):
-    """
-        final displace error of the best trajectory (trajectory with 
-        lowest errors) across all samples in the dataset 
-    """
-    errors = calculate_displacement_error(y[:,:,-1], y_hat[:,:,-1])
-    best_idx = np.argmin(errors, axis=1)
-    avg_error = 0
-    for sample_idx, traj_idx in enumerate(best_idx):
-        avg_error += errors[sample_idx, traj_idx] 
-    avg_error /= len(best_idx)
-    return avg_error
-
-def ade_best20(y, y_hat):
-    """
-        average displacement error of the best trajectory (trajectory with
-        lowest error) averaged across all samples in the dataset
-    """
-    errors = calculate_displacement_error(y[:,:,:], y_hat[:,:,:]).mean(axis=2)
-    best_idx = np.argmin(errors, axis=1)
-    avg_error = 0
-    for sample_idx, traj_idx in enumerate(best_idx):
-        avg_error += errors[sample_idx, traj_idx] 
-    avg_error /= len(best_idx)
-    return avg_error
-
 
 #%%
-# TODO: correct naming. topN we meant average of l-lowest of N 
+# TODO: correct naming. by topN we mean average of l-lowest of N 
 def fde_topN(y, y_hat, N=1, axis=(0,1)):
     """
         average displacement error of the best trajectory (trajectory with
@@ -315,19 +263,8 @@ def energy_score_spatiotemporal(y, x, K=1, d=2, b=1):
 
 #%%
 if __name__ == "__main__":
-#%%
-    results_path = 'results/'
-    for dataset in datasets:
-        for scene in dataset:
-            path_ours = os.path.join(results_path, scene.split(".")[0], "ours.npy")
-            path_gts = os.path.join(results_path, scene.split(".")[0], "groundtruths.npy")
-            pred_ours = np.load(path_ours)
-            pred_gts = np.load(path_gts)[:,np.newaxis,:,:]
-            print(scene)
-            print(fde_ml(pred_gts, pred_ours).round(2))
-            print(ade_ml(pred_gts, pred_ours).round(2))
-            print(fde_best20(pred_gts, pred_ours).round(2))
-            print(ade_best20(pred_gts, pred_ours).round(2))
-            print(energy_score(pred_gts, pred_ours, K=pred_ours.shape[1]).mean().round(2))
-            print("#"*20)
-# %%
+    # run test on the implemented scores
+    # y = np.random.random(size=(10,1,4,2))
+    # y_hat = np.random.random(size=(10,100,4,2))
+
+    pass
