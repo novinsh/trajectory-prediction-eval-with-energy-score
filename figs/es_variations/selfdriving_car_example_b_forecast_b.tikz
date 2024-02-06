@@ -1,0 +1,31 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=begin, label={above:\Large $t=0$}] (5) at (-18.5, 0) {};
+		\node [style=scenario 1 step, label={above:\Large $t=1$}] (6) at (-7.5, 3) {};
+		\node [style=scenario 2 step, label={above:\Large $t=1$}] (7) at (0, -3) {};
+		\node [style=none] (10) at (-9.5, 3) {};
+		\node [style=none] (11) at (-9.5, -3) {};
+		\node [style=scenario 1 step, label={above:\Large $t=2$}] (12) at (0, 3) {};
+		\node [style=scenario 2 step, label={above:\Large $t=2$}] (13) at (7.5, -3) {};
+		\node [style=none] (15) at (-18.5, 4) {\LARGE\bfseries Forecast B};
+		\node [style=none] (21) at (-19, -4) {};
+		\node [style=none] (22) at (-19, -2) {};
+		\node [style=none] (24) at (-17, -4) {};
+		\node [style=none] (26) at (-22, 5) {};
+		\node [style=none] (27) at (-22, -5) {};
+		\node [style=none] (28) at (9, -5) {};
+		\node [style=none] (29) at (9, 5) {};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=scenario 2] (10.center) to (6);
+		\draw [style=scenario 1] (11.center) to (7);
+		\draw [style=scenario 1, in=0, out=-180] (11.center) to (5);
+		\draw [style=scenario 2, in=-180, out=0] (5) to (10.center);
+		\draw [style=scenario 2] (6) to (12);
+		\draw [style=scenario 1] (7) to (13);
+		\draw [style=frame] (29.center) to (28.center);
+		\draw [style=frame] (28.center) to (27.center);
+		\draw [style=frame] (27.center) to (26.center);
+		\draw [style=frame] (26.center) to (29.center);
+	\end{pgfonlayer}
+\end{tikzpicture}

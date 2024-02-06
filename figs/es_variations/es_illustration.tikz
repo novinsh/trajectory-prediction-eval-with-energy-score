@@ -1,0 +1,41 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=obs] (5) at (-0.75, 3.25) {};
+		\node [style=pred] (6) at (-4, 4) {};
+		\node [style=pred] (7) at (-3, 1.75) {};
+		\node [style=pred] (8) at (-1, 4.75) {};
+		\node [style=pred] (9) at (1, 1.75) {};
+		\node [style=com] (10) at (-2.075, 3.15) {};
+		\node [style=none] (11) at (-6, 5.5) {};
+		\node [style=none] (12) at (-7.25, 3.25) {};
+		\node [style=none, scale=0.75] (15) at (-6.5, 5.75) {$\texttt{obs}$};
+		\node [style=none] (16) at (-10, 5.5) {};
+		\node [style=none] (17) at (-11, 4.5) {};
+		\node [style=none, scale=0.75, color=blue] (18) at (-9.25, 5.75) {$\texttt{pred}$};
+		\node [style=none, scale=0.65, color=blue] (20) at (-9.25, 5.25) {$K=4$};
+		\node [style=none] (21) at (-2.75, 5.5) {};
+		\node [style=none] (22) at (-2.15, 3.45) {};
+		\node [style=none, scale=0.65, color=blue] (23) at (-3.25, 5.75) {$CoM$};
+		\node [style=obs] (24) at (-7.75, 3) {};
+		\node [style=pred] (25) at (-11, 4) {};
+		\node [style=pred] (26) at (-10, 1.75) {};
+		\node [style=pred] (27) at (-8, 4.75) {};
+		\node [style=pred] (28) at (-6, 1.75) {};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=edge] (6) to (8);
+		\draw [style=edge] (8) to (9);
+		\draw [style=edge] (9) to (7);
+		\draw [style=edge] (7) to (6);
+		\draw [style=edge] (6) to (9);
+		\draw [style=edge] (7) to (8);
+		\draw [style=comdiff] (10) to (5);
+		\draw [style=arrow, bend left] (11.center) to (12.center);
+		\draw [style=new edge style 0, bend right=15] (16.center) to (17.center);
+		\draw [style=new edge style 0] (21.center) to (22.center);
+		\draw [style=edge] (26) to (24);
+		\draw [style=edge] (25) to (24);
+		\draw [style=edge] (27) to (24);
+		\draw [style=edge] (24) to (28);
+	\end{pgfonlayer}
+\end{tikzpicture}
